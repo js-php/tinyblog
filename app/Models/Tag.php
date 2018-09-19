@@ -13,17 +13,6 @@ class Tag extends Model
         return $this->belongsToMany(Post::class);
     }
 
-    public function insertItems(Array $tagNames)
-    {
-        // foreach ($tagNames as $tagName) {
-        //     $tagName = 
-        // }
-
-        // $tagNamesCollection->each($iterationFunct);
-        // $tagNames
-        // $fields['hash'] = crc32($fields['name']);
-    }
-
     public function scopeFilterByManyHashSlug($query, Collection $tagNames)
     {
         foreach ($tagNames as $nameCollection) {
@@ -37,7 +26,7 @@ class Tag extends Model
     }
 
     /**
-     * устанавливает hash.
+     * устанавливает атррибуты hash и slug.
      *
      * @param  string  $value
      * @return void
@@ -51,12 +40,25 @@ class Tag extends Model
         $this->attributes['slug']   = $slug;
     }
 
+    /**
+     * возвращает хеш строки
+     *
+     * @param  string  $str
+     * @return string
+     */
     public function hash($str): string
     {
         $str = trim($str);
         return (string) crc32($str);
     }
 
+    /**
+     * возвращает хеш строки
+     *
+     * @param  Illuminate\Support\Collection  $original
+     * @param  Illuminate\Support\Collection  $given
+     * @return Illuminate\Support\Collection
+     */
     public function getModelsCollection(Array $tagNames): Collection
     {
         $tagModels = collect([]);
@@ -66,13 +68,22 @@ class Tag extends Model
         return $tagModels;
     }
 
+    /**
+     * Сравнивает вложенные массивы в двух коллекциях по хешу
+     *
+     * @param  Illuminate\Support\Collection  $original
+     * @param  Illuminate\Support\Collection  $given
+     * @return Illuminate\Support\Collection
+     */
     public function compareByHash(Collection $original, Collection $given): Collection
     {
-        $originalHashes = $original->pluck('hash');
-        $givenHashes    = $given->pluck('hash');
-        $res            = $originalHashes->diff($givenHashes);
-        $filter = function($val) use ($res) {
-            return $res->contains($val['hash']);
+        $originalHashes     = $original->pluck('hash');
+        $givenHashes        = $given->pluck('hash');
+        // берём хеши из оригинальной коллекции, которых нет в переданной
+        $originalUniqHashes = $originalHashes->diff($givenHashes);
+        // оставляем в коллекции только те массивы, которые имеют хеши, не присутствующие в переданной коллекции
+        $filter = function($val) use ($originalUniqHashes) {
+            return $originalUniqHashes->contains($val['hash']);
         };
         return $original->filter($filter);
     }

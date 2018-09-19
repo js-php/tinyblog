@@ -13,6 +13,12 @@ class Post extends Model
         return $this->belongsToMany(Tag::class);
     }
 
+    /**
+     * Сохраняет пост блога
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \App\Post
+     */
     public function saveNew($request)
     {
         $postData = $request->only($this->fillable);

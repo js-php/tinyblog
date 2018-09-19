@@ -11,9 +11,6 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Route::resource('posts','PostController');
 
@@ -21,3 +18,5 @@ Route::prefix('post')->name('post.tag.')->group(function() {
     Route::get('tag','TagController@index')->name('index');
     Route::get('tag/{slug}','TagController@PostList')->where('slug','[a-z-]+')->name('list');
 });
+
+Route::get('/','PostController@index');

@@ -46,6 +46,7 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      *
+     * @param  \App\Post  $post
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
@@ -90,6 +91,7 @@ class PostController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Post  $post
+     * @param  \App\Tag  $tag
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Post $post, Tag $tag)
@@ -112,6 +114,13 @@ class PostController extends Controller
         //
     }
 
+    /**
+     * Выполняет действия по сохранению тегов и прикрепления к посту
+     *
+     * @param  \App\Post  $post
+     * @return void
+     */
+
     protected function tagsSaveActions(Post $post)
     {
         // получаем массив тегов из строки формы создания поста
@@ -133,6 +142,12 @@ class PostController extends Controller
             }
         }
     }
+
+    /**
+     * возвращает подходящий редирект
+     *
+     * @return void
+     */
 
     protected function endRedirect()
     {
